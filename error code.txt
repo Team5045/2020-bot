@@ -1,0 +1,16 @@
+[60.73] Traceback (most recent call last):
+[60.73]   File "/home/lvuser/py/robot.py", line 1, in <module>
+[60.73]     import wpilib
+[60.73]   File "/usr/local/lib/python3.7/site-packages/wpilib/__init__.py", line 6, in <module>
+[60.73]     from .adxl345_i2c import ADXL345_I2C
+[60.73]   File "/usr/local/lib/python3.7/site-packages/wpilib/adxl345_i2c.py", line 12, in <module>
+[60.74]     import hal
+[60.74]   File "/usr/local/lib/python3.7/site-packages/hal/__init__.py", line 1, in <module>
+[60.74]     from .functions import *
+[60.74]   File "/usr/local/lib/python3.7/site-packages/hal/functions.py", line 39, in <module>
+[60.74]     from hal_impl.fndef import _RETFUNC, _THUNKFUNC, _VAR, _dll, sleep
+[60.74]   File "/usr/local/lib/python3.7/site-packages/hal_impl/fndef.py", line 11, in <module>
+[60.74]     _dll = C.CDLL(os.path.join(_module_path, "libwpiHal.so"), use_errno=True)
+[60.74]   File "/usr/local/lib/python3.7/ctypes/__init__.py", line 356, in __init__
+[60.74]     self._handle = _dlopen(self._name, mode)
+[60.74] OSError: libRoboRIO_FRC_ChipObject.so.19: cannot open shared object file: No such file or directory
