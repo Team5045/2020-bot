@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import math
 from magicbot import tunable
 from ctre import WPI_TalonSRX

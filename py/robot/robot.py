@@ -20,12 +20,12 @@ class SpartaBot(magicbot.MagicRobot):
         self.drive_controller = wpilib.XboxController(0)
         self.compressor = wpilib.Compressor()
 
-        self.drivetrain_left_motor_master = ctre.WPI_TalonSRX(2)
-        self.drivetrain_left_motor_slave = ctre.WPI_TalonSRX(1)
-        self.drivetrain_left_motor_slave2 = ctre.WPI_TalonSRX()
-        self.drivetrain_right_motor_master = ctre.WPI_TalonSRX(8)
-        self.drivetrain_right_motor_slave = ctre.WPI_TalonSRX(7)
-        self.drivetrain_right_motor_slave2 = ctre.WPI_TalonSRX()
+        self.drivetrain_left_motor_master = ctre.WPI_TalonSRX(3)
+        self.drivetrain_left_motor_slave = ctre.WPI_TalonSRX(4)
+        self.drivetrain_left_motor_slave2 = ctre.WPI_TalonSRX(2)
+        self.drivetrain_right_motor_master = ctre.WPI_TalonSRX(7)
+        self.drivetrain_right_motor_slave = ctre.WPI_TalonSRX(8)
+        self.drivetrain_right_motor_slave2 = ctre.WPI_TalonSRX(6)
         self.drivetrain_shifter_solenoid = wpilib.Solenoid(2)
         self.navx = navx.AHRS.create_spi()
 
