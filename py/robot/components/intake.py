@@ -1,7 +1,7 @@
 from ctre import WPI_TalonSRX
 from magicbot import tunable
 from enum import IntEnum
-from wpilib import Solenoid
+from wpilib import DoubleSolenoid
 from constants import TALON_TIMEOUT
 
 class IntakeState(IntEnum):
@@ -11,7 +11,7 @@ class IntakeState(IntEnum):
 
 class Intake:
     roller_motor = WPI_TalonSRX
-    arm_solenoid = Solenoid
+    arm_solenoid = DoubleSolenoid
 
     def setup(self):
         self.state = IntakeState.RETRACTED
@@ -42,9 +42,9 @@ class Intake:
 
     def execute(self):
         if self.state == IntakeState.RETRACTED:
-            self.solenoid.set(Solenoid.Value.KForward)
+            self.arm_solenoid.set(DoubleSolenoid.Value.kForward)
         elif self.state == IntakeState.EXTENDED:
-            self.solenoid.set(Solenoid.Value.kReverse)
+            self.arm_solenoid.set(DoubleSolenoid.Value.kReverse)
 
         self.run_intake(self.speed)
     
