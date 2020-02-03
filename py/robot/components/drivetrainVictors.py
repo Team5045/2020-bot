@@ -1,6 +1,6 @@
 import math
 from collections import namedtuple
-from ctre import WPI_TalonSRX
+from ctre import WPI_TalonSRX, WPI_VictorSPX
 from wpilib import Solenoid
 from wpilib.drive import DifferentialDrive
 from magicbot import tunable

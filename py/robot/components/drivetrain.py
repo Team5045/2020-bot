@@ -37,6 +37,7 @@ class Drivetrain:
     left_motor_master = WPI_TalonSRX
     left_motor_slave = WPI_TalonSRX
     left_motor_slave2 = WPI_TalonSRX
+    
     right_motor_master = WPI_TalonSRX
     right_motor_slave = WPI_TalonSRX
     right_motor_slave2 = WPI_TalonSRX

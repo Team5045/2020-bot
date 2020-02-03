@@ -1,4 +1,4 @@
-from ctre import WPI_TalonSRX
+from ctre import WPI_VictorSPX
 from magicbot import tunable
 from enum import IntEnum
 from wpilib import DoubleSolenoid
@@ -10,7 +10,7 @@ class IntakeState(IntEnum):
 
 
 class Intake:
-    roller_motor = WPI_TalonSRX
+    roller_motor = WPI_VictorSPX
     arm_solenoid = DoubleSolenoid
 
     def setup(self):
@@ -27,10 +27,10 @@ class Intake:
             self.state = IntakeState.EXTENDED
 
     def extend(self):
-        self.state = ClawState.EXTENDED
+        self.state = IntakeState.EXTENDED
 
     def retract(self):
-        self.state = ClawState.RETRACTED
+        self.state = IntakeState.RETRACTED
 
     def run_intake(self, speed):
         self.roller_motor.set(speed)
