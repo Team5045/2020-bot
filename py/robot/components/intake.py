@@ -32,7 +32,7 @@ class Intake:
     def retract(self):
         self.state = IntakeState.RETRACTED
 
-    def run_intake(self, speed):
+    def run_roller(self, speed):
         self.roller_motor.set(speed)
 
     def get_state(self):

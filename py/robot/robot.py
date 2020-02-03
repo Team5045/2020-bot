@@ -45,8 +45,9 @@ class SpartaBot(magicbot.MagicRobot):
         #tower
         self.tower_motor = ctre.WPI_VictorSPX(10)
         self.shooter_motor = ctre.WPI_TalonSRX(1)
+        self.feed_motor = ctre.WPI_TalonSRX(11)
 
-
+        #limelight
         self.sd = NetworkTables.getTable("SmartDashboard")
         data = self.targeting.get_data()
 
@@ -64,7 +65,7 @@ class SpartaBot(magicbot.MagicRobot):
 
     def teleopPeriodic(self):
 
-        #drivetrain
+    #drivetrain
         angle = self.drive_controller.getX(CONTROLLER_RIGHT)
         self.drivetrain.angle_corrected_differential_drive(
             -self.drive_controller.getY(CONTROLLER_LEFT), angle)
@@ -72,45 +73,39 @@ class SpartaBot(magicbot.MagicRobot):
         if self.drive_controller.getStickButtonReleased(CONTROLLER_LEFT):
             self.drivetrain.shift_toggle()
 
-        #power cell intake
+    #power cell intake
         if self.drive_controller.getBumper(CONTROLLER_RIGHT):
-            self.intake_roller_motor.set(0.95)
+            self.intake.run_roller(0.85)
         if self.drive_controller.getBumper(CONTROLLER_LEFT):
-            self.intake_roller_motor.set(-0.95)
+            self.intake.run_roller(-0.85)
 
-        #tower
+    #tower
         '''if self.drive_controller.getYButtonReleased():
             self.tower.move_incremental(35000)
         elif self.drive_controller.getXButtonReleased():
             self.tower.move_incremental(-5000)'''
-        
         self.tower_motor.set(self.drive_controller.getTriggerAxis(CONTROLLER_LEFT))
+
+        if self.drive_controller.getXButton():
+            self.feed_motor.set(0.8)
+        else:
+            self.feed_motor.stopMotor()
         
-        #shooter
-        self.tower_motor.set(self.drive_controller.getTriggerAxis(CONTROLLER_RIGHT))
+    #shooter
+        self.shooter_motor.set(self.drive_controller.getTriggerAxis(CONTROLLER_RIGHT))
         '''
         if self.drive_controller.getAButton():
             self.shooter_motor.set(0.96)
         else:
             self.shooter_motor.stopMotor()'''
 
-
+    #Limelight Test
         self.sd.putNumber("tv", data.found)
-        #Limelight Test
         if data.found == 1:
             self.intake_roller_motor.set(0.5)
 
-        '''        
-        if self.drive_controller.getAButton():
-            self.shooter_motor.set(-0.9)
-        elif self.drive_controller.getBButton():
-            self.shooter_motor.set(-0.65)
-        else:
-            self.shooter_motor.stopMotor()'''
         
-
-        
-        #intake arm
+    #intake arm deploy
         '''
         if self.drive_controller.getBumperReleased(CONTROLLER_LEFT):
             self.intake.switch()'''
