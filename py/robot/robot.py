@@ -49,7 +49,7 @@ class SpartaBot(magicbot.MagicRobot):
 
         #limelight
         self.sd = NetworkTables.getTable("SmartDashboard")
-        data = self.targeting.get_data()
+        self.data = self.targeting.get_data()
 
 
     def autonomousInit(self):
@@ -101,7 +101,7 @@ class SpartaBot(magicbot.MagicRobot):
 
     #Limelight Test
         self.sd.putNumber("tv", data.found)
-        if data.found == 1:
+        if self.data.found == 1:
             self.intake_roller_motor.set(0.5)
 
         
