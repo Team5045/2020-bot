@@ -46,5 +46,5 @@ class Intake:
         elif self.state == IntakeState.EXTENDED:
             self.arm_solenoid.set(DoubleSolenoid.Value.kReverse)
 
-        self.run_intake(self.speed)
+        self.run_roller(self.speed)
     

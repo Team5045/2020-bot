@@ -18,7 +18,7 @@ class SpartaBot(magicbot.MagicRobot):
     #tower = tower.Tower
     
     #drivetrain = drivetrainVictors.Drivetrain
-    targeting = targeting.Targeting
+    #targeting = targeting.Targeting
 
 
     def createObjects(self):
@@ -45,11 +45,11 @@ class SpartaBot(magicbot.MagicRobot):
         #tower
         self.tower_motor = ctre.WPI_VictorSPX(10)
         self.shooter_motor = ctre.WPI_TalonSRX(1)
-        self.feed_motor = ctre.WPI_TalonSRX(11)
+        self.index_motor = ctre.WPI_TalonSRX(11)
 
         #limelight
-        self.sd = NetworkTables.getTable("SmartDashboard")
-        self.data = self.targeting.get_data()
+        #self.sd = NetworkTables.getTable("SmartDashboard")
+        #self.data = self.targeting.get_data()
 
 
     def autonomousInit(self):
@@ -87,9 +87,9 @@ class SpartaBot(magicbot.MagicRobot):
         self.tower_motor.set(self.drive_controller.getTriggerAxis(CONTROLLER_LEFT))
 
         if self.drive_controller.getXButton():
-            self.feed_motor.set(0.8)
+            self.index_motor.set(0.8)
         else:
-            self.feed_motor.stopMotor()
+            self.index_motor.stopMotor()
         
     #shooter
         self.shooter_motor.set(self.drive_controller.getTriggerAxis(CONTROLLER_RIGHT))
@@ -100,15 +100,18 @@ class SpartaBot(magicbot.MagicRobot):
             self.shooter_motor.stopMotor()'''
 
     #Limelight Test
+        '''
         self.sd.putNumber("tv", data.found)
         if self.data.found == 1:
             self.intake_roller_motor.set(0.5)
+        '''
 
         
     #intake arm deploy
         '''
         if self.drive_controller.getBumperReleased(CONTROLLER_LEFT):
-            self.intake.switch()'''
+            self.intake.switch()
+        '''
 
 
 if __name__ == '__main__':
