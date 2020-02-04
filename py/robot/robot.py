@@ -2,10 +2,10 @@ import wpilib
 import ctre
 import magicbot
 import navx
-from components import drivetrain, intake, targeting
+from components import drivetrain, intake#, shooter , targeting
 #targeting
-from controllers import alignment_controller
-from networktables import NetworkTables
+#from controllers import alignment_controller
+#from networktables import NetworkTables
 
 CONTROLLER_LEFT = wpilib.XboxController.Hand.kLeft
 CONTROLLER_RIGHT = wpilib.XboxController.Hand.kRight
@@ -15,6 +15,7 @@ class SpartaBot(magicbot.MagicRobot):
 
     drivetrain = drivetrain.Drivetrain
     intake = intake.Intake
+    #shooter = shooter.Shooter
     #tower = tower.Tower
     
     #drivetrain = drivetrainVictors.Drivetrain
@@ -22,7 +23,7 @@ class SpartaBot(magicbot.MagicRobot):
 
 
     def createObjects(self):
-        NetworkTables.initialize(server='10.50.45.2')
+        #NetworkTables.initialize(server='10.50.45.2')
         self.drive_controller = wpilib.XboxController(0)
         #self.compressor = wpilib.Compressor()
 
@@ -43,9 +44,12 @@ class SpartaBot(magicbot.MagicRobot):
         self.intake_arm_solenoid = wpilib.DoubleSolenoid(0,1)
 
         #tower
-        self.tower_motor = ctre.WPI_VictorSPX(10)
-        self.shooter_motor = ctre.WPI_TalonSRX(1)
-        self.index_motor = ctre.WPI_TalonSRX(11)
+        self.tower_motor = ctre.WPI_TalonSRX(5)
+        self.index_motor = ctre.WPI_TalonSRX(1)
+
+        #shooter
+        self.shoot_motor_master = ctre.WPI_VictorSPX(11)
+        self.shoot_motor_slave = ctre.WPI_VictorSPX(9)
 
         #limelight
         #self.sd = NetworkTables.getTable("SmartDashboard")
@@ -73,31 +77,33 @@ class SpartaBot(magicbot.MagicRobot):
         if self.drive_controller.getStickButtonReleased(CONTROLLER_LEFT):
             self.drivetrain.shift_toggle()
 
-    #power cell intake
+    #intake
         if self.drive_controller.getBumper(CONTROLLER_RIGHT):
             self.intake.run_roller(0.85)
         if self.drive_controller.getBumper(CONTROLLER_LEFT):
             self.intake.run_roller(-0.85)
 
     #tower
+        self.tower_motor.set(self.drive_controller.getTriggerAxis(CONTROLLER_LEFT))
+
         '''if self.drive_controller.getYButtonReleased():
             self.tower.move_incremental(35000)
         elif self.drive_controller.getXButtonReleased():
-            self.tower.move_incremental(-5000)'''
-        self.tower_motor.set(self.drive_controller.getTriggerAxis(CONTROLLER_LEFT))
+            self.tower.move_incremental(-5000)
 
         if self.drive_controller.getXButton():
             self.index_motor.set(0.8)
         else:
-            self.index_motor.stopMotor()
+            self.index_motor.stopMotor()'''
         
     #shooter
-        self.shooter_motor.set(self.drive_controller.getTriggerAxis(CONTROLLER_RIGHT))
-        '''
-        if self.drive_controller.getAButton():
-            self.shooter_motor.set(0.96)
+        if self.drive_controller.getTriggerAxis(CONTROLLER_RIGHT)>0.4:
+            self.shoot_motor_master.set(0.95)
+            self.shoot_motor_slave.set(0.95)
         else:
-            self.shooter_motor.stopMotor()'''
+            self.shoot_motor_master.stopMotor()
+            self.shoot_motor_slave.stopMotor()
+        
 
     #Limelight Test
         '''
