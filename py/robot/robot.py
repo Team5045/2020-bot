@@ -5,7 +5,7 @@ import navx
 from components import drivetrain, intake , shooter #, climb, targeting
 #targeting
 #from controllers import alignment_controller
-#from networktables import NetworkTables
+from networktables import NetworkTables
 
 CONTROLLER_LEFT = wpilib.XboxController.Hand.kLeft
 CONTROLLER_RIGHT = wpilib.XboxController.Hand.kRight
@@ -24,7 +24,7 @@ class SpartaBot(magicbot.MagicRobot):
 
 
     def createObjects(self):
-        #NetworkTables.initialize(server='10.50.45.2')
+        
         self.drive_controller = wpilib.XboxController(0)
         #self.compressor = wpilib.Compressor()
 
@@ -61,7 +61,6 @@ class SpartaBot(magicbot.MagicRobot):
 
 
         #limelight
-        #self.sd = NetworkTables.getTable("SmartDashboard")
         #self.data = self.targeting.get_data()
 
 
@@ -145,6 +144,12 @@ class SpartaBot(magicbot.MagicRobot):
         if self.data.found == 1:
             self.intake_roller_motor.set(0.5)
         '''
+        self.llt = NetworkTables.getTable('limelight')
+        self.tv = llt.getNumber('tv', 0)
+        self.tx = llt.getNumber('tx', 0)
+        while self.tv:
+            if self.tx > 2 and self.tx < -2:
+                self.
 
         
     #intake arm deploy
