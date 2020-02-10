@@ -2,7 +2,8 @@ import wpilib
 import ctre
 import magicbot
 import navx
-from components import drivetrain, intake , shooter #, climb, targeting
+from common import rumbler
+from components import drivetrain, intake , shooter, #, climb, targeting
 #targeting
 #from controllers import alignment_controller
 from networktables import NetworkTables
@@ -16,6 +17,7 @@ class SpartaBot(magicbot.MagicRobot):
     drivetrain = drivetrain.Drivetrain
     intake = intake.Intake
     shooter = shooter.Shooter
+    
     #tower = tower.Tower
     #climb = climb.Climb
     
@@ -57,6 +59,15 @@ class SpartaBot(magicbot.MagicRobot):
         self.climb_motor_master = ctre.WPI_TalonSRX(12)
         self.climb_motor_slave = ctre.WPI_TalonSRX(1)
 
+       ''' #limelight PID Turning
+        self.PIDF = [2.5, 0.002, 10.0, 0.0]
+        self.target_pos = self.tx
+        self.pending_move = None
+        self.target_angle = 0
+        self.lock_target = False'''
+        self.kP = 0
+        self.kI = 0
+        self.kD = 0
 
 
 
@@ -145,17 +156,32 @@ class SpartaBot(magicbot.MagicRobot):
             self.intake_roller_motor.set(0.5)
         '''
         self.llt = NetworkTables.getTable('limelight')
-        self.tv = llt.getNumber('tv', 0)
-        self.tx = llt.getNumber('tx', 0)
+        self.tv = self.llt.getNumber('tv', 0)
+        self.tx = self.llt.getNumber('tx', 0)
         if self.drive_controller.getYButton:
+            #rumbler.rumble(self.drive_controller.leftRumble, 1)
+            #rumbler.rumble(self.drive_controller.rightRumble, 1)
+            #self.lmotorpos = self.drivetrain_left_motor_master.get_positon()
+            #self.rmotorpos = self.drivetrain_right_motor_master.get_position()
+            self.proportional = self.kP
+            self.integral_prior = self.kI
+            self.derivative = self.kD
+            self.iteration_time = 0.1
+            self.error_prior = 0
             while self.tv:
-                if self.tx > 2:
+                self.error = 0 - self.tx
+                self.integral = self.integral + self.error * self.iteration_time
+                self.derivative = (self.error - self.error_prior) / self.iteration_time
+                self.output = self.kP * self.error + self.kI * self.integral + self.kD * self.derivative
+                self.drivetrain_left_motor_master.set(self.output)
+                self.drivetrain_right_motor_master.set(-(self.output))
+                '''if self.tx > 2:
                     self.drivetrain_left_motor_master.set(-0.5)
                     self.drivetrain_right_motor_master.set(-0.5)
                 elif self.tx < -2:
                     self.drivetrain_left_motor_master.set(0.5)
                     self.drivetrain_right_motor_master.set(0.5)
-                else:
+                else:'''
 
 
         
