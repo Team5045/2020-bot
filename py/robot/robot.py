@@ -2,7 +2,7 @@ import wpilib
 import ctre
 import magicbot
 import navx
-from components import drivetrain, intake#, shooter , targeting
+from components import drivetrain, intake , shooter #, climb, targeting
 #targeting
 #from controllers import alignment_controller
 #from networktables import NetworkTables
@@ -15,8 +15,9 @@ class SpartaBot(magicbot.MagicRobot):
 
     drivetrain = drivetrain.Drivetrain
     intake = intake.Intake
-    #shooter = shooter.Shooter
+    shooter = shooter.Shooter
     #tower = tower.Tower
+    #climb = climb.Climb
     
     #drivetrain = drivetrainVictors.Drivetrain
     #targeting = targeting.Targeting
@@ -41,15 +42,23 @@ class SpartaBot(magicbot.MagicRobot):
 
         #intake
         self.intake_roller_motor = ctre.WPI_VictorSPX(10)
-        self.intake_arm_solenoid = wpilib.DoubleSolenoid(0,1)
+        self.feed_motor = ctre.WPI_TalonSRX(13)
+        self.intake_arm_solenoid = wpilib.DoubleSolenoid(4,5)
 
         #tower
         self.tower_motor = ctre.WPI_TalonSRX(5)
-        self.index_motor = ctre.WPI_TalonSRX(1)
+        #self.index_motor = ctre.WPI_TalonSRX(1)
 
         #shooter
-        self.shoot_motor_master = ctre.WPI_VictorSPX(11)
-        self.shoot_motor_slave = ctre.WPI_VictorSPX(9)
+        self.shooter_motor_master = ctre.WPI_VictorSPX(11)
+        self.shooter_motor_slave = ctre.WPI_VictorSPX(9)
+
+        #climb
+        self.climb_motor_master = ctre.WPI_TalonSRX(12)
+        self.climb_motor_slave = ctre.WPI_TalonSRX(1)
+
+
+
 
         #limelight
         #self.sd = NetworkTables.getTable("SmartDashboard")
@@ -67,8 +76,11 @@ class SpartaBot(magicbot.MagicRobot):
         pass
 
 
-    def teleopPeriodic(self):
 
+
+
+
+    def teleopPeriodic(self):
     #drivetrain
         angle = self.drive_controller.getX(CONTROLLER_RIGHT)
         self.drivetrain.angle_corrected_differential_drive(
@@ -80,12 +92,19 @@ class SpartaBot(magicbot.MagicRobot):
     #intake
         if self.drive_controller.getBumper(CONTROLLER_RIGHT):
             self.intake.run_roller(0.85)
-        if self.drive_controller.getBumper(CONTROLLER_LEFT):
+            self.feed_motor.set(0.3)
+        elif self.drive_controller.getAButton():
             self.intake.run_roller(-0.85)
+            self.feed_motor.set(-0.3)
+        else:
+            self.feed_motor.stopMotor()
+            
+        
 
     #tower
         self.tower_motor.set(self.drive_controller.getTriggerAxis(CONTROLLER_LEFT))
-
+        if self.drive_controller.getBumper(CONTROLLER_LEFT):
+            self.tower_motor.set(-0.5)
         '''if self.drive_controller.getYButtonReleased():
             self.tower.move_incremental(35000)
         elif self.drive_controller.getXButtonReleased():
@@ -98,12 +117,27 @@ class SpartaBot(magicbot.MagicRobot):
         
     #shooter
         if self.drive_controller.getTriggerAxis(CONTROLLER_RIGHT)>0.4:
-            self.shoot_motor_master.set(0.95)
-            self.shoot_motor_slave.set(0.95)
+            self.shooter.run_shooter(0.97)
         else:
-            self.shoot_motor_master.stopMotor()
-            self.shoot_motor_slave.stopMotor()
-        
+            self.shooter_motor_master.stopMotor()
+            self.shooter_motor_master.stopMotor()
+            
+    #climb
+        '''
+        if self.drive_controller.getAButton():
+            self.climb_motor_master.set(0.4)
+            self.climb_motor_slave.set(0.4)
+        elif self.drive_controller.getBButton():
+            self.climb_motor_master.set(-0.4)
+            self.climb_motor_slave.set(-0.4)
+        elif self.drive_controller.getYButton():
+            self.climb_motor_master.set(-0.4)
+        elif self.drive_controller.getXButton():
+            self.climb_motor_slave.set(-0.4)
+        else:
+            self.climb_motor_master.stopMotor()
+            self.climb_motor_slave.stopMotor()       
+        ''' 
 
     #Limelight Test
         '''
@@ -114,10 +148,8 @@ class SpartaBot(magicbot.MagicRobot):
 
         
     #intake arm deploy
-        '''
-        if self.drive_controller.getBumperReleased(CONTROLLER_LEFT):
+        if self.drive_controller.getYButtonReleased():
             self.intake.switch()
-        '''
 
 
 if __name__ == '__main__':
