@@ -147,9 +147,16 @@ class SpartaBot(magicbot.MagicRobot):
         self.llt = NetworkTables.getTable('limelight')
         self.tv = llt.getNumber('tv', 0)
         self.tx = llt.getNumber('tx', 0)
-        while self.tv:
-            if self.tx > 2 and self.tx < -2:
-                self.
+        if self.drive_controller.getYButton:
+            while self.tv:
+                if self.tx > 2:
+                    self.drivetrain_left_motor_master.set(-0.5)
+                    self.drivetrain_right_motor_master.set(-0.5)
+                elif self.tx < -2:
+                    self.drivetrain_left_motor_master.set(0.5)
+                    self.drivetrain_right_motor_master.set(0.5)
+                else:
+
 
         
     #intake arm deploy
