@@ -3,7 +3,7 @@ import ctre
 import magicbot
 import navx
 from common import rumbler
-from components import drivetrain, intake , shooter, #, climb, targeting
+from components import (drivetrain, intake , shooter) #, climb, targeting
 #targeting
 #from controllers import alignment_controller
 from networktables import NetworkTables
@@ -59,12 +59,13 @@ class SpartaBot(magicbot.MagicRobot):
         self.climb_motor_master = ctre.WPI_TalonSRX(12)
         self.climb_motor_slave = ctre.WPI_TalonSRX(1)
 
-       ''' #limelight PID Turning
+        '''limelight PID Turning
         self.PIDF = [2.5, 0.002, 10.0, 0.0]
         self.target_pos = self.tx
         self.pending_move = None
         self.target_angle = 0
-        self.lock_target = False'''
+        self.lock_target = False
+        '''
         self.kP = 0
         self.kI = 0
         self.kD = 0
@@ -190,7 +191,7 @@ class SpartaBot(magicbot.MagicRobot):
 
         
     #intake arm deploy
-        if self.drive_controller.getYButtonReleased():
+        if self.drive_controller.getBButtonReleased():
             self.intake.switch()
 
 
