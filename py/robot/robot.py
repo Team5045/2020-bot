@@ -158,7 +158,8 @@ class SpartaBot(magicbot.MagicRobot):
         self.llt = NetworkTables.getTable('limelight')
         self.tv = self.llt.getNumber('tv', 0)
         self.tx = self.llt.getNumber('tx', 0)
-        if self.drive_controller.getYButton:
+        if self.drive_controller.getYButton():
+            '''
             #rumbler.rumble(self.drive_controller.leftRumble, 1)
             #rumbler.rumble(self.drive_controller.rightRumble, 1)
             #self.lmotorpos = self.drivetrain_left_motor_master.get_positon()
@@ -175,13 +176,16 @@ class SpartaBot(magicbot.MagicRobot):
                 self.output = self.kP * self.error + self.kI * self.integral + self.kD * self.derivative
                 self.drivetrain_left_motor_master.set(self.output)
                 self.drivetrain_right_motor_master.set(-(self.output))
-                '''if self.tx > 2:
-                    self.drivetrain_left_motor_master.set(-0.5)
-                    self.drivetrain_right_motor_master.set(-0.5)
-                elif self.tx < -2:
-                    self.drivetrain_left_motor_master.set(0.5)
-                    self.drivetrain_right_motor_master.set(0.5)
-                else:'''
+            '''
+            '''if self.tx > 2:
+                self.drivetrain_left_motor_master.set(-0.5)
+                self.drivetrain_right_motor_master.set(-0.5)
+            elif self.tx < -2:
+                self.drivetrain_left_motor_master.set(0.5)
+                self.drivetrain_right_motor_master.set(0.5)
+            else:'''
+
+            self.drivetrain.turn(self.tx)
 
 
         
