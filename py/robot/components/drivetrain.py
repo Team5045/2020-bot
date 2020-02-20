@@ -5,6 +5,7 @@ from wpilib import Solenoid
 from wpilib.drive import DifferentialDrive
 from magicbot import tunable
 import navx
+from networktables import NetworkTables
 
 from constants import TALON_TIMEOUT
 from common import util
@@ -264,3 +265,11 @@ class Drivetrain:
         self.pending_gear = state['pending_gear']
         self.pending_differential_drive = DifferentialDriveConfig._make(
             state['pending_differential_drive'])
+    
+    def limelight_turn(self):
+        self.llt = NetworkTables.getTable('limelight')
+        self.tv = self.llt.getNumber('tv', 0)
+        self.tx = self.llt.getNumber('tx', 0)
+        if self.tv:
+            self.turn(self.get_position() + self.tx)
+

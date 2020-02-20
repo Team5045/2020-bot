@@ -31,13 +31,13 @@ class SpartaBot(magicbot.MagicRobot):
         #self.compressor = wpilib.Compressor()
 
         #drivetrain
-        self.drivetrain_left_motor_master = ctre.WPI_TalonSRX(4)
-        self.drivetrain_left_motor_slave = ctre.WPI_TalonSRX(2)
-        self.drivetrain_left_motor_slave2 = ctre.WPI_TalonSRX(3)
+        self.drivetrain_right_motor_master = ctre.WPI_TalonSRX(4)
+        self.drivetrain_right_motor_slave = ctre.WPI_TalonSRX(2)
+        self.drivetrain_right_motor_slave2 = ctre.WPI_TalonSRX(3)
 
-        self.drivetrain_right_motor_master = ctre.WPI_TalonSRX(7)
-        self.drivetrain_right_motor_slave = ctre.WPI_TalonSRX(8)
-        self.drivetrain_right_motor_slave2 = ctre.WPI_TalonSRX(6)
+        self.drivetrain_left_motor_master = ctre.WPI_TalonSRX(7)
+        self.drivetrain_left_motor_slave = ctre.WPI_TalonSRX(8)
+        self.drivetrain_left_motor_slave2 = ctre.WPI_TalonSRX(6)
 
         self.drivetrain_shifter_solenoid = wpilib.Solenoid(2)
         self.navx = navx.AHRS.create_spi()
@@ -65,17 +65,11 @@ class SpartaBot(magicbot.MagicRobot):
         self.pending_move = None
         self.target_angle = 0
         self.lock_target = False
+
         '''
         self.kP = 0
         self.kI = 0
         self.kD = 0
-
-
-
-        #limelight
-        #self.data = self.targeting.get_data()
-
-
     def autonomousInit(self):
         pass
 
@@ -95,7 +89,7 @@ class SpartaBot(magicbot.MagicRobot):
     #drivetrain
         angle = self.drive_controller.getX(CONTROLLER_RIGHT)
         self.drivetrain.angle_corrected_differential_drive(
-            -self.drive_controller.getY(CONTROLLER_LEFT), angle)
+            self.drive_controller.getY(CONTROLLER_LEFT), angle)
 
         if self.drive_controller.getStickButtonReleased(CONTROLLER_LEFT):
             self.drivetrain.shift_toggle()
@@ -159,8 +153,12 @@ class SpartaBot(magicbot.MagicRobot):
         self.llt = NetworkTables.getTable('limelight')
         self.tv = self.llt.getNumber('tv', 0)
         self.tx = self.llt.getNumber('tx', 0)
+            
         if self.drive_controller.getYButton():
+            self.drivetrain.turn(self.drivetrain.get_position() + self.tx)
             '''
+            #self.drivetrain.limelight_turn()
+            
             #rumbler.rumble(self.drive_controller.leftRumble, 1)
             #rumbler.rumble(self.drive_controller.rightRumble, 1)
             #self.lmotorpos = self.drivetrain_left_motor_master.get_positon()
@@ -175,8 +173,7 @@ class SpartaBot(magicbot.MagicRobot):
                 self.integral = self.integral + self.error * self.iteration_time
                 self.derivative = (self.error - self.error_prior) / self.iteration_time
                 self.output = self.kP * self.error + self.kI * self.integral + self.kD * self.derivative
-                self.drivetrain_left_motor_master.set(self.output)
-                self.drivetrain_right_motor_master.set(-(self.output))
+                self.drivetrain.turn(self.output)
             '''
             '''if self.tx > 2:
                 self.drivetrain_left_motor_master.set(-0.5)
@@ -185,10 +182,6 @@ class SpartaBot(magicbot.MagicRobot):
                 self.drivetrain_left_motor_master.set(0.5)
                 self.drivetrain_right_motor_master.set(0.5)
             else:'''
-
-            self.drivetrain.turn(self.tx)
-
-
         
     #intake arm deploy
         if self.drive_controller.getBButtonReleased():
