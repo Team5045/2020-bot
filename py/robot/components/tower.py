@@ -17,6 +17,9 @@ class Tower:
     USE_MOTIONMAGIC = True
 
     motor = WPI_TalonSRX
+    feed_motor_master = WPI_TalonSRX
+    feed_motor_slave = WPI_TalonSRX
+    
     kFreeSpeed = tunable(0.3)
     kZeroingSpeed = tunable(0.1)
     kP = tunable(0.3)
@@ -56,6 +59,9 @@ class Tower:
         self.motor.selectProfileSlot(0, 0)
         self.motor.setSensorPhase(True)
 
+        self.feed_motor_slave.set(WPI_TalonSRX.ControlMode.Follower,
+                                  self.motor_master.getDeviceID())
+
         self.motor.config_kP(0, self.kP, 0)
         self.motor.config_kI(0, self.kI, 0)
         self.motor.config_kD(0, self.kD, 0)
@@ -70,6 +76,10 @@ class Tower:
             # Simulator - no motion profiling support
             self.USE_MOTIONMAGIC = False
 
+
+    def run_feed(self, speed):
+        self.feed_motor_master.set(speed)
+        self.speed = speed
 
     def is_encoder_connected(self):
         return self.motor.getPulseWidthRiseToRiseUs() != 0

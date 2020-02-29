@@ -3,7 +3,7 @@ import ctre
 import magicbot
 import navx
 from common import rumbler
-from components import (drivetrain, intake , shooter) #, climb, targeting
+from components import drivetrain, intake , shooter, tower #, climb, targeting
 #targeting
 #from controllers import alignment_controller
 from networktables import NetworkTables
@@ -17,8 +17,8 @@ class SpartaBot(magicbot.MagicRobot):
     drivetrain = drivetrain.Drivetrain
     intake = intake.Intake
     shooter = shooter.Shooter
-    
     #tower = tower.Tower
+
     #climb = climb.Climb
     
     #drivetrain = drivetrainVictors.Drivetrain
@@ -31,45 +31,51 @@ class SpartaBot(magicbot.MagicRobot):
         #self.compressor = wpilib.Compressor()
 
         #drivetrain
+        self.drivetrain_left_motor_master = ctre.WPI_TalonSRX(1)
+        self.drivetrain_left_motor_slave = ctre.WPI_TalonSRX(2)
+        self.drivetrain_left_motor_slave2 = ctre.WPI_TalonSRX(3)
+
         self.drivetrain_right_motor_master = ctre.WPI_TalonSRX(4)
-        self.drivetrain_right_motor_slave = ctre.WPI_TalonSRX(2)
-        self.drivetrain_right_motor_slave2 = ctre.WPI_TalonSRX(3)
+        self.drivetrain_right_motor_slave = ctre.WPI_TalonSRX(5)
+        self.drivetrain_right_motor_slave2 = ctre.WPI_TalonSRX(6)
 
-        self.drivetrain_left_motor_master = ctre.WPI_TalonSRX(7)
-        self.drivetrain_left_motor_slave = ctre.WPI_TalonSRX(8)
-        self.drivetrain_left_motor_slave2 = ctre.WPI_TalonSRX(6)
-
-        self.drivetrain_shifter_solenoid = wpilib.Solenoid(2)
+        self.drivetrain_shifter_solenoid = wpilib.Solenoid(1)
         self.navx = navx.AHRS.create_spi()
 
         #intake
-        self.intake_roller_motor = ctre.WPI_VictorSPX(10)
-        self.feed_motor = ctre.WPI_TalonSRX(13)
-        self.intake_arm_solenoid = wpilib.DoubleSolenoid(4,5)
+        self.intake_roller_motor = ctre.WPI_VictorSPX(12)
+        self.intake_arm_solenoid = wpilib.DoubleSolenoid(2,3)
 
         #tower
-        self.tower_motor = ctre.WPI_TalonSRX(5)
-        #self.index_motor = ctre.WPI_TalonSRX(1)
+        self.tower_motor = ctre.WPI_TalonSRX(8)
+        self.tower_feed_motor_master = ctre.WPI_TalonSRX(7)
+        self.tower_feed_motor_slave = ctre.WPI_TalonSRX(9)
 
         #shooter
         self.shooter_motor_master = ctre.WPI_VictorSPX(11)
-        self.shooter_motor_slave = ctre.WPI_VictorSPX(9)
+        self.shooter_motor_slave = ctre.WPI_VictorSPX(13)
+        self.shooter_hood_solenoid = wpilib.DoubleSolenoid(4,5)
 
         #climb
-        self.climb_motor_master = ctre.WPI_TalonSRX(12)
-        self.climb_motor_slave = ctre.WPI_TalonSRX(1)
+        self.climb_motor_master = ctre.WPI_TalonSRX(14)
+        self.climb_motor_slave = ctre.WPI_TalonSRX(15)
 
-        '''limelight PID Turning
+        ''' limelight PID Turning
         self.PIDF = [2.5, 0.002, 10.0, 0.0]
         self.target_pos = self.tx
         self.pending_move = None
         self.target_angle = 0
-        self.lock_target = False
-
-        '''
+        self.lock_target = False'''
         self.kP = 0
         self.kI = 0
         self.kD = 0
+
+
+
+        #limelight
+        #self.data = self.targeting.get_data()
+
+
     def autonomousInit(self):
         pass
 
@@ -96,36 +102,45 @@ class SpartaBot(magicbot.MagicRobot):
 
     #intake
         if self.drive_controller.getBumper(CONTROLLER_RIGHT):
-            self.intake.run_roller(0.85)
-            self.feed_motor.set(0.3)
+            self.intake.run_roller(0.8)
+            self.tower.run_feed(0.4)
         elif self.drive_controller.getAButton():
-            self.intake.run_roller(-0.85)
-            self.feed_motor.set(-0.3)
-        else:
-            self.feed_motor.stopMotor()
+            self.intake.run_roller(-0.8)
+            self.tower.run_feed(-0.4)
             
+    #intake arm deploy
+        if self.drive_controller.getYButtonReleased():
+            self.intake.switch()
         
 
     #tower
-        self.tower_motor.set(self.drive_controller.getTriggerAxis(CONTROLLER_LEFT))
-        if self.drive_controller.getBumper(CONTROLLER_LEFT):
-            self.tower_motor.set(-0.5)
-        '''if self.drive_controller.getYButtonReleased():
+        '''
+        self.tower_motor.set(-self.drive_controller.getTriggerAxis(CONTROLLER_LEFT))
+
+        if self.drive_controller.getYButtonReleased():
             self.tower.move_incremental(35000)
         elif self.drive_controller.getXButtonReleased():
             self.tower.move_incremental(-5000)
+        '''
 
-        if self.drive_controller.getXButton():
-            self.index_motor.set(0.8)
+        if self.drive_controller.getTriggerAxis(CONTROLLER_LEFT)>0.2:
+            self.tower_motor.set(self.drive_controller.getTriggerAxis(CONTROLLER_LEFT))
+        elif self.drive_controller.getBumper(CONTROLLER_LEFT):
+            self.tower_motor.set(-0.5)
         else:
-            self.index_motor.stopMotor()'''
+            self.tower_motor.set(0)
         
     #shooter
-        if self.drive_controller.getTriggerAxis(CONTROLLER_RIGHT)>0.4:
-            self.shooter.run_shooter(0.97)
+        self.shooter.speed = self.drive_controller.getTriggerAxis(CONTROLLER_RIGHT)
+        if self.drive_controller.getXButtonReleased():
+            self.shooter.switch()
+
+        '''
         else:
             self.shooter_motor_master.stopMotor()
-            self.shooter_motor_master.stopMotor()
+            self.shooter_motor_slave.stopMotor()
+
+        '''
             
     #climb
         '''
@@ -143,49 +158,6 @@ class SpartaBot(magicbot.MagicRobot):
             self.climb_motor_master.stopMotor()
             self.climb_motor_slave.stopMotor()       
         ''' 
-
-    #Limelight Test
-        '''
-        self.sd.putNumber("tv", data.found)
-        if self.data.found == 1:
-            self.intake_roller_motor.set(0.5)
-        '''
-        self.llt = NetworkTables.getTable('limelight')
-        self.tv = self.llt.getNumber('tv', 0)
-        self.tx = self.llt.getNumber('tx', 0)
-            
-        if self.drive_controller.getYButton():
-            self.drivetrain.turn(self.drivetrain.get_position() + self.tx)
-            '''
-            #self.drivetrain.limelight_turn()
-            
-            #rumbler.rumble(self.drive_controller.leftRumble, 1)
-            #rumbler.rumble(self.drive_controller.rightRumble, 1)
-            #self.lmotorpos = self.drivetrain_left_motor_master.get_positon()
-            #self.rmotorpos = self.drivetrain_right_motor_master.get_position()
-            self.proportional = self.kP
-            self.integral_prior = self.kI
-            self.derivative = self.kD
-            self.iteration_time = 0.1
-            self.error_prior = 0
-            while self.tv:
-                self.error = 0 - self.tx
-                self.integral = self.integral + self.error * self.iteration_time
-                self.derivative = (self.error - self.error_prior) / self.iteration_time
-                self.output = self.kP * self.error + self.kI * self.integral + self.kD * self.derivative
-                self.drivetrain.turn(self.output)
-            '''
-            '''if self.tx > 2:
-                self.drivetrain_left_motor_master.set(-0.5)
-                self.drivetrain_right_motor_master.set(-0.5)
-            elif self.tx < -2:
-                self.drivetrain_left_motor_master.set(0.5)
-                self.drivetrain_right_motor_master.set(0.5)
-            else:'''
-        
-    #intake arm deploy
-        if self.drive_controller.getBButtonReleased():
-            self.intake.switch()
 
 
 if __name__ == '__main__':
