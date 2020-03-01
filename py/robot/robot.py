@@ -102,11 +102,14 @@ class SpartaBot(magicbot.MagicRobot):
 
     #intake
         if self.drive_controller.getBumper(CONTROLLER_RIGHT):
-            self.intake.run_roller(0.8)
-            self.tower.run_feed(0.4)
+            self.intake_roller_motor.set(0.8)
+            #self.tower.run_feed(0.4)
         elif self.drive_controller.getAButton():
-            self.intake.run_roller(-0.8)
-            self.tower.run_feed(-0.4)
+            self.intake_roller_motor.set(-0.8)
+            #self.tower.run_feed(-0.4)
+        else:
+            self.intake_roller_motor.set(0)
+
             
     #intake arm deploy
         if self.drive_controller.getYButtonReleased():
@@ -124,14 +127,17 @@ class SpartaBot(magicbot.MagicRobot):
         '''
 
         if self.drive_controller.getTriggerAxis(CONTROLLER_LEFT)>0.2:
-            self.tower_motor.set(self.drive_controller.getTriggerAxis(CONTROLLER_LEFT))
+            self.tower_motor.set(-self.drive_controller.getTriggerAxis(CONTROLLER_LEFT))
         elif self.drive_controller.getBumper(CONTROLLER_LEFT):
-            self.tower_motor.set(-0.5)
+            self.tower_motor.set(0.5)
         else:
             self.tower_motor.set(0)
         
     #shooter
-        self.shooter.speed = self.drive_controller.getTriggerAxis(CONTROLLER_RIGHT)
+        if self.drive_controller.getTriggerAxis(CONTROLLER_RIGHT)>0.4:
+            self.shooter.run_shooter(0.9)
+        else:
+            self.shooter.run_shooter(0)
         if self.drive_controller.getXButtonReleased():
             self.shooter.switch()
 
