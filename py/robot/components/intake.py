@@ -44,8 +44,10 @@ class Intake:
     def execute(self):
         if self.state == IntakeState.RETRACTED:
             self.arm_solenoid.set(DoubleSolenoid.Value.kForward)
+            self.run_roller(self.speed)
         elif self.state == IntakeState.EXTENDED:
             self.arm_solenoid.set(DoubleSolenoid.Value.kReverse)
-
-        self.run_roller(self.speed)
+            self.run_roller(0)
+        else:
+            self.run_roller(0)
     

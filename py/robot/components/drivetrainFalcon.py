@@ -1,6 +1,6 @@
 import math
 from collections import namedtuple
-from ctre import WPI_TalonSRX
+from ctre import WPI_TalonFX
 from wpilib import Solenoid
 from wpilib.drive import DifferentialDrive
 from magicbot import tunable
@@ -35,13 +35,13 @@ class Drivetrain:
 
     navx = navx.AHRS
 
-    left_motor_master = WPI_TalonSRX
-    left_motor_slave = WPI_TalonSRX
-    left_motor_slave2 = WPI_TalonSRX
+    left_motor_master = WPI_TalonFX
+    left_motor_slave = WPI_TalonFX
+    left_motor_slave2 = WPI_TalonFX
     
-    right_motor_master = WPI_TalonSRX
-    right_motor_slave = WPI_TalonSRX
-    right_motor_slave2 = WPI_TalonSRX
+    right_motor_master = WPI_TalonFX
+    right_motor_slave = WPI_TalonFX
+    right_motor_slave2 = WPI_TalonFX
 
     shifter_solenoid = Solenoid
 
@@ -65,19 +65,19 @@ class Drivetrain:
 
         # Set encoders
         self.left_motor_master.configSelectedFeedbackSensor(
-            WPI_TalonSRX.FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
+            WPI_TalonFX.FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
         self.right_motor_master.configSelectedFeedbackSensor(
-            WPI_TalonSRX.FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
+            WPI_TalonFX.FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
         self.left_motor_master.setSensorPhase(True)
 
         # Set slave motors
-        self.left_motor_slave.set(WPI_TalonSRX.ControlMode.Follower,
+        self.left_motor_slave.set(WPI_TalonFX.ControlMode.Follower,
                                   self.left_motor_master.getDeviceID())
-        self.left_motor_slave2.set(WPI_TalonSRX.ControlMode.Follower,
+        self.left_motor_slave2.set(WPI_TalonFX.ControlMode.Follower,
                                   self.left_motor_master.getDeviceID())
-        self.right_motor_slave.set(WPI_TalonSRX.ControlMode.Follower,
+        self.right_motor_slave.set(WPI_TalonFX.ControlMode.Follower,
                                    self.right_motor_master.getDeviceID())
-        self.right_motor_slave2.set(WPI_TalonSRX.ControlMode.Follower,
+        self.right_motor_slave2.set(WPI_TalonFX.ControlMode.Follower,
                                    self.right_motor_master.getDeviceID())
 
         # Set up drive control
@@ -127,8 +127,10 @@ class Drivetrain:
         '''
         Heading must be reset first. (drivetrain.reset_angle_correction())
         '''
+
         # Scale angle to reduce max turn
         rotation = util.scale(rotation, -1, 1, -0.65, 0.65)
+
         # Scale y-speed in high gear
         if self.pending_gear == HIGH_GEAR:
             y = util.scale(y, -1, 1, -0.75, 0.75)
