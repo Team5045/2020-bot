@@ -5,7 +5,6 @@ from wpilib import Solenoid
 from wpilib.drive import DifferentialDrive
 from magicbot import tunable
 import navx
-from networktables import NetworkTables
 
 from constants import TALON_TIMEOUT
 from common import util
@@ -28,7 +27,7 @@ DISTANCE_PER_REV_METERS = (2 * math.pi * RADIUS_METERS) / (3 / 1) / (54 / 30)
 
 DEADBAND = 0.05
 
-USE_CURVATURE_DRIVE = False
+USE_CURVATURE_DRIVE = True
 
 
 class Drivetrain:
@@ -38,7 +37,6 @@ class Drivetrain:
     left_motor_master = WPI_TalonSRX
     left_motor_slave = WPI_TalonSRX
     left_motor_slave2 = WPI_TalonSRX
-    
     right_motor_master = WPI_TalonSRX
     right_motor_slave = WPI_TalonSRX
     right_motor_slave2 = WPI_TalonSRX
@@ -127,8 +125,10 @@ class Drivetrain:
         '''
         Heading must be reset first. (drivetrain.reset_angle_correction())
         '''
+
         # Scale angle to reduce max turn
         rotation = util.scale(rotation, -1, 1, -0.65, 0.65)
+
         # Scale y-speed in high gear
         if self.pending_gear == HIGH_GEAR:
             y = util.scale(y, -1, 1, -0.75, 0.75)
@@ -245,7 +245,7 @@ class Drivetrain:
                 self.robot_drive.arcadeDrive(
                     self.pending_differential_drive.y,
                     -self.pending_differential_drive.rotation,
-                    squareInputs=self.pending_differential_drive.squared)
+                    squaredInputs=self.pending_differential_drive.squared)
 
             self.pending_differential_drive = None
             self.force_differential_drive = False
@@ -263,11 +263,3 @@ class Drivetrain:
         self.pending_gear = state['pending_gear']
         self.pending_differential_drive = DifferentialDriveConfig._make(
             state['pending_differential_drive'])
-    
-    def limelight_turn(self):
-        self.llt = NetworkTables.getTable('limelight')
-        self.tv = self.llt.getNumber('tv', 0)
-        self.tx = self.llt.getNumber('tx', 0)
-        if self.tv:
-            self.turn(self.get_position() + self.tx)
-

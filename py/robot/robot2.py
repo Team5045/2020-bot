@@ -1,7 +1,10 @@
 import wpilib
 import ctre
 import magicbot
-import navx
+import wpilib.drive
+import wpilib.controller
+
+from navx import AHRS
 from enum import IntEnum
 from common import rumbler
 from components import drivetrain, intake, shooterFalcon, tower, feed #, climb, targeting
@@ -57,7 +60,7 @@ class SpartaBot(magicbot.MagicRobot):
         '''
 
         self.drive_shifter_solenoid = wpilib.Solenoid(1)
-        self.navx = navx.AHRS.create_spi()
+        #self.navx = navx.AHRS.create_spi()
 
 
         #intake
@@ -117,6 +120,7 @@ class SpartaBot(magicbot.MagicRobot):
             self.drive_controller.getY(CONTROLLER_LEFT), angle)
         if self.drive_controller.getStickButtonReleased(CONTROLLER_LEFT):
             self.drivetrain.shift_toggle()
+            
         
         #self.spartaBot.tankDrive(self.drive_controller.getY(CONTROLLER_LEFT) * -1, self.drive_controller.getY(CONTROLLER_RIGHT) * -1)
         
