@@ -1,45 +1,44 @@
 import wpilib
-from ctre import WPI_VictorSPX
-from enum import IntEnum
+from ctre import WPI_TalonFX
 from wpilib import DoubleSolenoid
 
-class HoodState(IntEnum):
-    EXTENDED = 0
-    RETRACTED = 1
 
 class Shooter:
 
-    motor_master = WPI_VictorSPX
-    motor_slave = WPI_VictorSPX
+    motor_master = WPI_TalonFX
+    motor_slave = WPI_TalonFX
     hood_solenoid = DoubleSolenoid
+
+    state = False
 
     def setup(self):
         #shooter
         self.speed=0.0
-        self.stopstart=False
+
         #set slave motor
-        self.motor_slave.set(WPI_VictorSPX.ControlMode.Follower,
+        self.motor_slave.set(WPI_TalonFX.ControlMode.Follower,
                                   self.motor_master.getDeviceID())
         self.motor_master.setInverted(True)
 
         #hood
-        self.state = HoodState.RETRACTED
+        self.state = False
 
     def run_shooter(self, speed):
         self.motor_master.set(speed)
         self.speed = speed
     
     def switch(self):
-        if self.state == HoodState.EXTENDED:
-            self.state = HoodState.RETRACTED
-        elif self.state == HoodState.RETRACTED:
-            self.state = HoodState.EXTENDED
+        print("switch")
+        if self.state == False:
+            self.state = True
+        elif self.state == True:
+            self.state = False
 
     def extend(self):
-        self.state = HoodState.EXTENDED
+        self.state = True
 
     def retract(self):
-        self.state = HoodState.RETRACTED
+        self.state = False
 
     def get_state(self):
         return {
@@ -47,9 +46,13 @@ class Shooter:
         }
 
     def execute(self):
-        if self.state == HoodState.RETRACTED:
+        print("execute")
+        if self.state == True:
             self.hood_solenoid.set(DoubleSolenoid.Value.kForward)
-        elif self.state == HoodState.EXTENDED:
+        elif self.state == False:
             self.hood_solenoid.set(DoubleSolenoid.Value.kReverse)
 
-        self.run_shooter(self.speed)
+        if self.enable:
+            self.run_shooter(self.speed)
+        else:
+            self.run_shooter(0)
