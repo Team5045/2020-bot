@@ -10,8 +10,8 @@ class IntakeState(IntEnum):
 
 
 class Intake:
-    roller_motor = WPI_TalonSRX
-    arm_solenoid = DoubleSolenoid
+    roller_motor: WPI_TalonSRX
+    arm_solenoid:  DoubleSolenoid
 
     def setup(self):
         self.state = IntakeState.RETRACTED

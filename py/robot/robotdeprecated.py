@@ -16,16 +16,28 @@ CONTROLLER_RIGHT = wpilib.XboxController.Hand.kRightHand
 
 
 class SpartaBot(magicbot.MagicRobot):
+    
 
-    drivetrain = drivetrain.Drivetrain
-    intake = intake.Intake
-    shooter = shooterFalcon.Shooter
-    tower = tower.Tower
-    feed = feed.Feed
+    # drivetrain = drivetrain.Drivetrain
+    # intake = intake.Intake
+    # shooter = shooterFalcon.Shooter
+    # tower = tower.Tower
+    # feed = feed.Feed
 
+    # drivetrain: drivetrain.Drivetrain
+    # intake: intake.Intake
+    # shooter: shooterFalcon.Shooter
+    # tower: tower.Tower
+    # feed: feed.Feed
 
     def createObjects(self):
-        
+        self.drivetrain = drivetrain.Drivetrain
+        self.intake = intake.Intake
+        self.shooter = shooterFalcon.Shooter
+        self.tower = tower.Tower
+        self.feed = feed.Feed
+        print("--------------------")
+        print("inside create objects")
         self.drive_controller = wpilib.XboxController(0)
         #self.compressor = wpilib.Compressor()
 
@@ -94,6 +106,7 @@ class SpartaBot(magicbot.MagicRobot):
         self.kI = 0
         self.kD = 0
 
+        print("-----------------------------\nend of create object")
 
 
         #limelight
@@ -114,7 +127,9 @@ class SpartaBot(magicbot.MagicRobot):
 
     def teleopPeriodic(self):
     #drivetrain
-        
+        print("tpye")
+        print(self.drivetrain)
+        print(type(self.drivetrain))
         angle = self.drive_controller.getX(CONTROLLER_RIGHT)
         self.drivetrain.angle_corrected_differential_drive(
             self.drive_controller.getY(CONTROLLER_LEFT), angle)

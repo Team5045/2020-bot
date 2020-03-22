@@ -1,6 +1,7 @@
 import math
 from collections import namedtuple
 from ctre import WPI_TalonFX
+import ctre
 from wpilib import Solenoid
 from wpilib.drive import DifferentialDrive
 from magicbot import tunable
@@ -9,6 +10,8 @@ from networktables import NetworkTables
 
 from constants import TALON_TIMEOUT
 from common import util
+
+# ctre.ControlMode.Follower
 
 DifferentialDriveConfig = namedtuple('DifferentialDriveConfig',
                                      ['y', 'rotation', 'squared',
@@ -35,7 +38,8 @@ class Drivetrain:
 
     navx = navx.AHRS
 
-    left_motor_master = WPI_TalonFX
+    # left_motor_master = WPI_TalonFX
+    left_motor_master = ctre.TalonFX
     left_motor_slave = WPI_TalonFX
     left_motor_slave2 = WPI_TalonFX
     
@@ -64,8 +68,11 @@ class Drivetrain:
         self.is_manual_mode = False
 
         # Set encoders
+        # self.left_motor_master.configSelectedFeedbackSensor(
+        #     WPI_TalonFX.FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
         self.left_motor_master.configSelectedFeedbackSensor(
-            WPI_TalonFX.FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
+            ctre._ctre.FeedbackDevice.CTRE_MagEncoder_Relative,0,0
+        )
         self.right_motor_master.configSelectedFeedbackSensor(
             WPI_TalonFX.FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
         self.left_motor_master.setSensorPhase(True)

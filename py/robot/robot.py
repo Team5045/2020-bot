@@ -13,9 +13,10 @@ CONTROLLER_RIGHT = wpilib.XboxController.Hand.kRightHand
 
 
 class SpartaBot(magicbot.MagicRobot):
-    shooter = shooter.Shooter()
-    drivetrain = drivetrainFalcon.Drivetrain
-
+    # shooter = shooter.Shooter()
+    # drivetrain = drivetrainFalcon.Drivetrain
+    drivetrain : drivetrainFalcon.Drivetrain
+    shooter : shooter.Shooter
     def createObjects(self):
         self.drive_controller = wpilib.XboxController(0)
 
@@ -80,13 +81,13 @@ class SpartaBot(magicbot.MagicRobot):
 
         #shooter hood
 
-        if self.drive_controller.getStartButtonReleased():
-            self.hood_solenoid.set(DoubleSolenoid.Value.kReverse)
-        elif self.drive_controller.getBackButtonReleased():
-            self.hood_solenoid.set(DoubleSolenoid.Value.kForward)
+        # if self.drive_controller.getStartButtonReleased():
+        #     self.hood_solenoid.set(DoubleSolenoid.Value.kReverse)
+        # elif self.drive_controller.getBackButtonReleased():
+        #     self.hood_solenoid.set(DoubleSolenoid.Value.kForward)
         
-        # if self.drive_controller.getBButtonReleased():
-        #     self.shooter.switch()
+        if self.drive_controller.getBButtonReleased():
+            self.shooter.switch()
         
 
         #deploy intake

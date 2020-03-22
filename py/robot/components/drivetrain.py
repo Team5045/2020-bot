@@ -1,10 +1,13 @@
 import math
 from collections import namedtuple
 from ctre import WPI_TalonSRX
+import ctre
 from wpilib import Solenoid
 from wpilib.drive import DifferentialDrive
 from magicbot import tunable
 import navx
+import ctre
+# import magicbot
 
 from constants import TALON_TIMEOUT
 from common import util
@@ -30,18 +33,18 @@ DEADBAND = 0.05
 USE_CURVATURE_DRIVE = True
 
 
-class Drivetrain:
+class Drivetrain():
 
     navx = navx.AHRS
+    DEVICE_ID=5045
+    left_motor_master = WPI_TalonSRX(5045)
+    left_motor_slave = WPI_TalonSRX(5045)
+    left_motor_slave2 = WPI_TalonSRX(5045)
+    right_motor_master = WPI_TalonSRX(5045)
+    right_motor_slave = WPI_TalonSRX(5045)
+    right_motor_slave2 = WPI_TalonSRX(5045)
 
-    left_motor_master = WPI_TalonSRX
-    left_motor_slave = WPI_TalonSRX
-    left_motor_slave2 = WPI_TalonSRX
-    right_motor_master = WPI_TalonSRX
-    right_motor_slave = WPI_TalonSRX
-    right_motor_slave2 = WPI_TalonSRX
-
-    shifter_solenoid = Solenoid
+    shifter_solenoid = Solenoid(0) # not sure if the argument is correct
 
     arcade_cutoff = tunable(0.1)
     angle_correction_cutoff = tunable(0.05)
@@ -49,9 +52,15 @@ class Drivetrain:
     angle_correction_factor_high_gear = tunable(0.1)
     angle_correction_max = tunable(0.2)
 
-    little_rotation_cutoff = tunable(0.1)
+    little_rotation_cutoff = tunable(True)#tunable(0.1)
 
-    def setup(self):
+
+    def __init__(self):
+        print("-------------------------------------------")
+        print("inside init")
+        # self.little_rotation_cutoff = tunable(True)
+        # print(self.little_rotation_cutoff)
+
         self.pending_differential_drive = None
         self.force_differential_drive = False
         self.pending_gear = LOW_GEAR
@@ -62,21 +71,100 @@ class Drivetrain:
         self.is_manual_mode = False
 
         # Set encoders
+        print('-----encoders----')
+        print(self.left_motor_master)
+        print(type(ctre.FeedbackDevice.CTRE_MagEncoder_Relative))
         self.left_motor_master.configSelectedFeedbackSensor(
-            WPI_TalonSRX.FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
+            ctre.FeedbackDevice.CTRE_MagEncoder_Relative,0,0
+            # ctre.FeedbackDevice.CTRE_MagEncoder_Relative, 0,0
+        )
         self.right_motor_master.configSelectedFeedbackSensor(
-            WPI_TalonSRX.FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
+            ctre.FeedbackDevice.CTRE_MagEncoder_Relative, 0,0
+        )
         self.left_motor_master.setSensorPhase(True)
 
+        # self.left_motor_master.configSelectedFeedbackSensor(
+        #     WPI_TalonSRX.FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
+        # self.right_motor_master.configSelectedFeedbackSensor(
+        #     WPI_TalonSRX.FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
+        # self.left_motor_master.setSensorPhase(True)
+
+        
+        self.left_motor_slave.set(ctre.ControlMode.Follower,self.left_motor_master.getDeviceID())
+        
         # Set slave motors
-        self.left_motor_slave.set(WPI_TalonSRX.ControlMode.Follower,
-                                  self.left_motor_master.getDeviceID())
-        self.left_motor_slave2.set(WPI_TalonSRX.ControlMode.Follower,
-                                  self.left_motor_master.getDeviceID())
-        self.right_motor_slave.set(WPI_TalonSRX.ControlMode.Follower,
-                                   self.right_motor_master.getDeviceID())
-        self.right_motor_slave2.set(WPI_TalonSRX.ControlMode.Follower,
-                                   self.right_motor_master.getDeviceID())
+        self.left_motor_slave.set(ctre.ControlMode.Follower,self.left_motor_master.getDeviceID())
+        self.left_motor_slave2.set(ctre.ControlMode.Follower,self.left_motor_master.getDeviceID())
+        self.right_motor_slave.set(ctre.ControlMode.Follower,self.right_motor_master.getDeviceID())
+        self.right_motor_slave2.set(ctre.ControlMode.Follower,self.right_motor_master.getDeviceID())
+
+
+        # self.left_motor_slave.set(WPI_TalonSRX.ControlMode.Follower,
+        #                           self.left_motor_master.getDeviceID())
+        # self.left_motor_slave2.set(WPI_TalonSRX.ControlMode.Follower,
+        #                           self.left_motor_master.getDeviceID())
+        # self.right_motor_slave.set(WPI_TalonSRX.ControlMode.Follower,
+        #                            self.right_motor_master.getDeviceID())
+        # self.right_motor_slave2.set(WPI_TalonSRX.ControlMode.Follower,
+        #                            self.right_motor_master.getDeviceID())
+
+        # Set up drive control
+        self.robot_drive = DifferentialDrive(self.left_motor_master,
+                                             self.right_motor_master)
+        self.robot_drive.setDeadband(0)
+        self.robot_drive.setSafetyEnabled(False)
+
+    def setup(self):
+        print("--------------------------------------------------")
+        print("inside setup")
+        print(self)
+
+        self.pending_differential_drive = None
+        self.force_differential_drive = False
+        self.pending_gear = LOW_GEAR
+        self.pending_position = None
+        self.pending_reset = False
+        self.og_yaw = None
+        self.pending_manual_drive = None
+        self.is_manual_mode = False
+
+         # Set encoders
+        print('-----encoders----')
+        print(self.left_motor_master)
+        print(type(ctre.FeedbackDevice.CTRE_MagEncoder_Relative))
+        self.left_motor_master.configSelectedFeedbackSensor(
+            ctre.FeedbackDevice.CTRE_MagEncoder_Relative,0,0
+            # ctre.FeedbackDevice.CTRE_MagEncoder_Relative, 0,0
+        )
+        self.right_motor_master.configSelectedFeedbackSensor(
+            ctre.FeedbackDevice.CTRE_MagEncoder_Relative, 0,0
+        )
+        self.left_motor_master.setSensorPhase(True)
+
+        # self.left_motor_master.configSelectedFeedbackSensor(
+        #     WPI_TalonSRX.FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
+        # self.right_motor_master.configSelectedFeedbackSensor(
+        #     WPI_TalonSRX.FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
+        # self.left_motor_master.setSensorPhase(True)
+
+        
+        self.left_motor_slave.set(ctre.ControlMode.Follower,self.left_motor_master.getDeviceID())
+        
+        # Set slave motors
+        self.left_motor_slave.set(ctre.ControlMode.Follower,self.left_motor_master.getDeviceID())
+        self.left_motor_slave2.set(ctre.ControlMode.Follower,self.left_motor_master.getDeviceID())
+        self.right_motor_slave.set(ctre.ControlMode.Follower,self.right_motor_master.getDeviceID())
+        self.right_motor_slave2.set(ctre.ControlMode.Follower,self.right_motor_master.getDeviceID())
+
+
+        # self.left_motor_slave.set(WPI_TalonSRX.ControlMode.Follower,
+        #                           self.left_motor_master.getDeviceID())
+        # self.left_motor_slave2.set(WPI_TalonSRX.ControlMode.Follower,
+        #                           self.left_motor_master.getDeviceID())
+        # self.right_motor_slave.set(WPI_TalonSRX.ControlMode.Follower,
+        #                            self.right_motor_master.getDeviceID())
+        # self.right_motor_slave2.set(WPI_TalonSRX.ControlMode.Follower,
+        #                            self.right_motor_master.getDeviceID())
 
         # Set up drive control
         self.robot_drive = DifferentialDrive(self.left_motor_master,
@@ -125,10 +213,12 @@ class Drivetrain:
         '''
         Heading must be reset first. (drivetrain.reset_angle_correction())
         '''
-
+        
         # Scale angle to reduce max turn
         rotation = util.scale(rotation, -1, 1, -0.65, 0.65)
 
+        print("pending gear--------------------")
+        print(self.pending_gear)
         # Scale y-speed in high gear
         if self.pending_gear == HIGH_GEAR:
             y = util.scale(y, -1, 1, -0.75, 0.75)
@@ -138,6 +228,8 @@ class Drivetrain:
 
         # Small rotation at lower speeds - and also do a quick_turn instead of
         # the normal curvature-based mode.
+        print("cutoff---------------")
+        print(self.little_rotation_cutoff)
         if abs(y) <= self.little_rotation_cutoff:
             rotation = util.abs_clamp(rotation, 0, 0.7)
             quick_turn = True
@@ -216,7 +308,9 @@ class Drivetrain:
         # print('exec drivetrain', self.pending_differential_drive)
         # print('dist_traveled_meters', self.get_left_encoder_meters(),
         #       self.get_right_encoder_meters())
-
+        print("inside execute-----------")
+        print(self.pending_gear)
+        print(self.shifter_solenoid)
         # Shifter
         self.shifter_solenoid.set(self.pending_gear)
 
