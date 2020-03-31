@@ -1,6 +1,7 @@
 import math
 from collections import namedtuple
 from ctre import WPI_TalonFX
+import ctre
 from wpilib import Solenoid
 from wpilib.drive import DifferentialDrive
 from magicbot import tunable
@@ -53,7 +54,7 @@ class Drivetrain:
 
     little_rotation_cutoff = tunable(0.1)
 
-    def setup(self):
+    def __init__(self):
         self.pending_differential_drive = None
         self.force_differential_drive = False
         self.pending_gear = LOW_GEAR
@@ -65,19 +66,19 @@ class Drivetrain:
 
         # Set encoders
         self.left_motor_master.configSelectedFeedbackSensor(
-            WPI_TalonFX.FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
+            ctre.TalonFXFeedbackDevice.IntegratedSensor, 0, 0)
         self.right_motor_master.configSelectedFeedbackSensor(
-            WPI_TalonFX.FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0)
+            ctre.TalonFXFeedbackDevice.IntegratedSensor, 0, 0)
         self.left_motor_master.setSensorPhase(True)
 
         # Set slave motors
-        self.left_motor_slave.set(WPI_TalonFX.ControlMode.Follower,
+        self.left_motor_slave.set(ctre.TalonFXControlMode.Follower,
                                   self.left_motor_master.getDeviceID())
-        self.left_motor_slave2.set(WPI_TalonFX.ControlMode.Follower,
+        self.left_motor_slave2.set(ctre.TalonFXControlMode.Follower,
                                   self.left_motor_master.getDeviceID())
-        self.right_motor_slave.set(WPI_TalonFX.ControlMode.Follower,
+        self.right_motor_slave.set(ctre.TalonFXControlMode.Follower,
                                    self.right_motor_master.getDeviceID())
-        self.right_motor_slave2.set(WPI_TalonFX.ControlMode.Follower,
+        self.right_motor_slave2.set(ctre.TalonFXControlMode.Follower,
                                    self.right_motor_master.getDeviceID())
 
         # Set up drive control

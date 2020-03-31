@@ -1,6 +1,7 @@
 import wpilib
 from ctre import WPI_TalonFX
 from wpilib import DoubleSolenoid
+import ctre
 
 
 class Shooter:
@@ -11,13 +12,12 @@ class Shooter:
 
     state = False
 
-    def setup(self):
+    def __init__(self):
         #shooter
         self.speed=0.0
 
         #set slave motor
-        self.motor_slave.set(WPI_TalonFX.ControlMode.Follower,
-                                  self.motor_master.getDeviceID())
+        self.motor_slave.set(ctre.TalonFXControlMode.Follower, self.motor_master.getDeviceID())
         self.motor_master.setInverted(True)
 
         #hood
