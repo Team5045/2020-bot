@@ -12,12 +12,12 @@ class Shooter:
 
     state = False
 
-    def __init__(self):
+    def createObjects(self):
         #shooter
         self.speed=0.0
 
         #set slave motor
-        self.motor_slave.set(ctre.TalonFXControlMode.Follower, self.motor_master.getDeviceID())
+        #self.motor_slave.set(ctre.TalonFXControlMode.Follower, self.motor_master.getDeviceID())
         self.motor_master.setInverted(True)
 
         #hood
@@ -25,6 +25,7 @@ class Shooter:
 
     def run_shooter(self, speed):
         self.motor_master.set(speed)
+        self.motor_slave.set(speed)
         self.speed = speed
     
     def switch(self):
@@ -48,9 +49,9 @@ class Shooter:
     def execute(self):
         print("execute")
         if self.state == True:
-            self.hood_solenoid.set(DoubleSolenoid.Value.kForward)
+            self.hood_solenoid.set(wpilib._wpilib.DoubleSolenoid.Value.Forward)
         elif self.state == False:
-            self.hood_solenoid.set(DoubleSolenoid.Value.kReverse)
+            self.hood_solenoid.set(wpilib._wpilib.DoubleSolenoid.Value.Reverse)
 
         if self.enable:
             self.run_shooter(self.speed)

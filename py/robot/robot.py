@@ -145,7 +145,6 @@ class SpartaBot(magicbot.MagicRobot):
             self.shooter_motor_slave.set(-0.25)
             self.climb_master.set(-0.8)
             self.climb_slave.set(-0.8)
-            #self.elevator.move_incremental(self, 100)
         elif self.drive_controller.getBackButton():
             self.shooter_motor.set(-0.25)
             self.shooter_motor_slave.set(0.25)
