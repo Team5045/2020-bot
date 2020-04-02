@@ -25,13 +25,7 @@ CONTROLLER_RIGHT = wpilib.XboxController.Hand.kRightHand
 
 
 class SpartaBot(magicbot.MagicRobot):
-    '''
-    shooter = shooterFalcon.Shooter()
-    shifter: Shifter
-    intake: Intake
-    tower: Tower
-    '''
-    elevator = elevator.Elevator()
+
 
     def createObjects(self):        
         self.value = DoubleSolenoid.Value.kForward
@@ -111,6 +105,7 @@ class SpartaBot(magicbot.MagicRobot):
         if (self.value == DoubleSolenoid.Value.kForward) and (self.drive_controller.getBButtonReleased()):
             self.hood_solenoid.set(self.value)
             self.value = DoubleSolenoid.Value.kReverse
+
         elif (self.value == DoubleSolenoid.Value.kReverse) and (self.drive_controller.getBButtonReleased()):
             self.hood_solenoid.set(self.value)
             self.value = DoubleSolenoid.Value.kForward

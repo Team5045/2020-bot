@@ -12,7 +12,9 @@ class Shooter:
 
     state = False
 
-    def createObjects(self):
+    value = DoubleSolenoid.Value.kForward
+
+    def setup(self):
         #shooter
         self.speed=0.0
 
@@ -21,6 +23,7 @@ class Shooter:
         self.motor_master.setInverted(True)
 
         #hood
+        self.value = DoubleSolenoid.Value.kForward
         self.state = False
 
     def run_shooter(self, speed):
@@ -32,8 +35,10 @@ class Shooter:
         print("switch")
         if self.state == False:
             self.state = True
+            self.value = DoubleSolenoid.Value.kReverse
         elif self.state == True:
             self.state = False
+            self.value = DoubleSolenoid.Value.kForward
 
     def extend(self):
         self.state = True
@@ -49,9 +54,9 @@ class Shooter:
     def execute(self):
         print("execute")
         if self.state == True:
-            self.hood_solenoid.set(wpilib._wpilib.DoubleSolenoid.Value.Forward)
+            self.hood_solenoid.set(self.value)
         elif self.state == False:
-            self.hood_solenoid.set(wpilib._wpilib.DoubleSolenoid.Value.Reverse)
+            self.hood_solenoid.set(self.value)
 
         if self.enable:
             self.run_shooter(self.speed)
